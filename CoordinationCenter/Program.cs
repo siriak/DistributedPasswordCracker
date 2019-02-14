@@ -13,7 +13,7 @@ namespace Lab1_Server
     class Program
     {
         static List<TcpClient> clients;
-        const int connectTimeoutMs = 15_000;
+        const int connectTimeoutMs = 30_000;
 
         public static async Task Main()
         {
