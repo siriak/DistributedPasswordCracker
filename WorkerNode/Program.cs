@@ -9,16 +9,15 @@ using System.Threading.Tasks;
 
 namespace Lab1_Client
 {
-    class Program
+    internal class Program
     {
-        static TcpClient client;
-        const int connectTimeoutMs = 10_000;
+        private const int connectTimeoutMs = 10_000;
 
-        static async Task Main()
+        private static async Task Main()
         {
             while (true)
             {
-                client = new TcpClient()
+                var client = new TcpClient
                 {
                     NoDelay = true,
                 };
@@ -75,7 +74,7 @@ namespace Lab1_Client
                         {
                             await Send("success status", bool.TrueString);
                             await Send("password", finished.Result.Item2);
-                            throw new Exception("Password was found");
+                            throw new ApplicationException("Password was found");
                         }
 
                         await Send("Success status", bool.FalseString);
@@ -95,7 +94,7 @@ namespace Lab1_Client
             }
         }
 
-        static Task<(bool, string)> Verify(string start, string hash, string salt, int continueCount)
+        private static Task<(bool, string)> Verify(string start, string hash, string salt, int continueCount)
         {
             return Task.Run(() =>
             {
@@ -124,8 +123,7 @@ namespace Lab1_Client
             });
         }
 
-
-        static byte[] GetFirstPassword(string salt, string start, int continueCount)
+        private static byte[] GetFirstPassword(string salt, string start, int continueCount)
         {
             var arr = new byte[salt.Length + start.Length + continueCount];
 
@@ -147,7 +145,7 @@ namespace Lab1_Client
             return arr;
         }
 
-        static bool GetNextPassword(byte[] buffer, int saltLength, int startLength)
+        private static bool GetNextPassword(byte[] buffer, int saltLength, int startLength)
         {
             var unchangeableLength = saltLength + startLength;
             var len = buffer.Length;
@@ -179,7 +177,7 @@ namespace Lab1_Client
             return true;
         }
 
-        static void GetHashString(byte[] password, char[] buffer)
+        private static void GetHashString(byte[] password, char[] buffer)
         {
             var hexAlphabet = "0123456789ABCDEF";
             var b = GetHash(password);
@@ -190,14 +188,15 @@ namespace Lab1_Client
             }
         }
 
-        static readonly ThreadLocal<HashAlgorithm> algorithm = new ThreadLocal<HashAlgorithm>(() => MD5.Create());
-        static byte[] GetHash(byte[] input) => algorithm.Value.ComputeHash(input);
+        private static readonly ThreadLocal<HashAlgorithm> algorithm = new ThreadLocal<HashAlgorithm>(() => MD5.Create());
+
+        private static byte[] GetHash(byte[] input) => algorithm.Value.ComputeHash(input);
 
         #region SocketWrappers
-        static StreamWriter sw;
-        static StreamReader sr;
+        private static StreamWriter sw;
+        private static StreamReader sr;
 
-        static async Task Send(string name, string data)
+        private static async Task Send(string name, string data)
         {
             Console.WriteLine();
             Console.WriteLine($"Sending {name}: {data}");
@@ -205,7 +204,7 @@ namespace Lab1_Client
             Console.WriteLine($"Sent");
         }
 
-        static async Task<string> Read(string name)
+        private static async Task<string> Read(string name)
         {
             Console.WriteLine();
             Console.WriteLine($"Reading {name}");
