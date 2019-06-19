@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Lab1_Server
 {
-    class Program
+    internal class Program
     {
-        static List<TcpClient> clients;
-        const int connectTimeoutMs = 30_000;
+        private static List<TcpClient> clients;
+        private const int connectTimeoutMs = 30_000;
 
         public static async Task Main()
         {
@@ -29,13 +29,13 @@ namespace Lab1_Server
             Console.ReadLine();
         }
 
-        static async Task<(string hash, string salt)> GetDataAsync()
+        private static async Task<(string hash, string salt)> GetDataAsync()
         {
             var lines = await File.ReadAllLinesAsync("password.txt");
             return (lines[0], lines[1]);
         }
 
-        static async Task<string> SendDataToClientsForProcessingAsync((string hash, string salt) data)
+        private static async Task<string> SendDataToClientsForProcessingAsync((string hash, string salt) data)
         {
             Console.WriteLine("Work started");
             var cts = new CancellationTokenSource();
@@ -46,7 +46,7 @@ namespace Lab1_Server
             return pass;
         }
 
-        static async Task<string> ProcessClient(TcpClient client, (string hash, string salt) data, CancellationToken ct)
+        private static async Task<string> ProcessClient(TcpClient client, (string hash, string salt) data, CancellationToken ct)
         {
             using var stream = client.GetStream();
             using var sw = new StreamWriter(stream)
@@ -82,10 +82,10 @@ namespace Lab1_Server
             }
         }
 
-        static int length = 0;
-        static int clientLength = -1;
-        static IEnumerator<string> enumerator;
-        static readonly object _lock = new object();
+        private static int length;
+        private static int clientLength = -1;
+        private static IEnumerator<string> enumerator;
+        private static readonly object _lock = new object();
         private static (string, int) GetStartInfo()
         {
             lock (_lock)
@@ -106,7 +106,7 @@ namespace Lab1_Server
             }
         }
 
-        static async Task<List<TcpClient>> AcceptClientsAsync()
+        private static async Task<List<TcpClient>> AcceptClientsAsync()
         {
             var clients = new List<TcpClient>();
             var listener = TcpListener.Create(8888);
@@ -141,7 +141,7 @@ namespace Lab1_Server
             return clients;
         }
 
-        static IEnumerable<string> GetPasswords(int length)
+        private static IEnumerable<string> GetPasswords(int length)
         {
             var sb = new StringBuilder(new string('A', length));
             while (true)
@@ -172,7 +172,7 @@ namespace Lab1_Server
 
         #region SocketWrappers
 
-        static async Task Send(StreamWriter sw, string name, string data)
+        private static async Task Send(StreamWriter sw, string name, string data)
         {
             Console.WriteLine();
             Console.WriteLine($"Sending {name}: {data}");
@@ -180,7 +180,7 @@ namespace Lab1_Server
             Console.WriteLine($"Sent");
         }
 
-        static async Task<string> Read(StreamReader sr, string name)
+        private static async Task<string> Read(StreamReader sr, string name)
         {
             Console.WriteLine();
             Console.WriteLine($"Reading {name}");
@@ -197,9 +197,10 @@ namespace Lab1_Server
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
 
         private delegate bool EventHandler(CtrlType sig);
-        static EventHandler _handler;
 
-        enum CtrlType
+        private static EventHandler _handler;
+
+        private enum CtrlType
         {
             CTRL_C_EVENT = 0,
             CTRL_BREAK_EVENT = 1,

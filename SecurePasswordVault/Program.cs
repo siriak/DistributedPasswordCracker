@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace SecurePasswordVault
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             Console.Write("Password: ");
 
@@ -34,8 +34,8 @@ namespace SecurePasswordVault
             while (true)
             {
                 var command = string.Empty;
-                
-                read_command:
+
+            read_command:
                 {
                     Console.WriteLine("Type command");
                     Console.WriteLine("Change password: C");
@@ -54,7 +54,7 @@ namespace SecurePasswordVault
                     }
                 }
 
-                change_password:
+            change_password:
                 Console.Write("New password (letters only): ");
                 var newPass = Console.ReadLine();
 
@@ -75,7 +75,7 @@ namespace SecurePasswordVault
             }
         }
 
-        static bool IsAdmin (string password)
+        private static bool IsAdmin(string password)
         {
             if (!File.Exists("password.txt"))
             {
@@ -87,14 +87,14 @@ namespace SecurePasswordVault
             return GetHashString((salt + password).Select(c => (byte)c).ToArray()) == hash;
         }
 
-        static (string hash, string salt) GetSecurityCredentials()
+        private static (string hash, string salt) GetSecurityCredentials()
         {
             var lines = File.ReadAllLines("password.txt");
 
             return (lines[0], lines[1]);
         }
 
-        static void SetSecurityCredentials(string hash, string salt)
+        private static void SetSecurityCredentials(string hash, string salt)
         {
             File.WriteAllLines("password.txt", new[]
             {
@@ -103,7 +103,7 @@ namespace SecurePasswordVault
             });
         }
 
-        static string GetHashString(byte[] password)
+        private static string GetHashString(byte[] password)
         {
             var hexAlphabet = "0123456789ABCDEF";
             var b = GetHash(password);
@@ -116,7 +116,8 @@ namespace SecurePasswordVault
             return new string(buffer);
         }
 
-        static readonly HashAlgorithm algorithm = MD5.Create();
-        static byte[] GetHash(byte[] input) => algorithm.ComputeHash(input);
+        private static readonly HashAlgorithm algorithm = MD5.Create();
+
+        private static byte[] GetHash(byte[] input) => algorithm.ComputeHash(input);
     }
 }
